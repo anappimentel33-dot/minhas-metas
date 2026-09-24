@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Metas — 2026 & 2027</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyCqnp7P2blA29iI8Ptj6ibSgvzHefdyQC4',
+      authDomain: 'minhas-metas-5b1c4.firebaseapp.com',
+      projectId: 'minhas-metas-5b1c4',
+      storageBucket: 'minhas-metas-5b1c4.firebasestorage.app',
+      messagingSenderId: '1036693813289',
+      appId: '1:1036693813289:web:7586991375ef01a6340438'
+    };
+
+    window.firebasePanel = {
+      auth: getAuth(initializeApp(firebaseConfig)),
+      db: null, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, doc, setDoc, onSnapshot
+    };
+    window.firebasePanel.db = getFirestore();
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
+  <style>
+    :root { --paper:#faf9f7; --card:#fff; --ink:#282221; --muted:#857c78; --line:#e9e3df; --wine:#6f2034; --wine-soft:#f5eaed; --green:#397355; --green-soft:#edf5f0; --shadow:0 12px 34px rgba(58,35,31,.06); }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font-family:Manrope,Arial,sans-serif; font-size:14px; }
+    button,input,select { font:inherit; }
+    button { cursor:pointer; }
+    .shell { width:min(1120px,calc(100% - 40px)); margin:0 auto; padding:42px 0 72px; }
+    header { display:flex; align-items:flex-start; justify-content:space-between; padding-bottom:34px; border-bottom:1px solid var(--line); }
+    .eyebrow { color:var(--wine); font-size:11px; letter-spacing:.14em; font-weight:700; text-transform:uppercase; }
+    h1 { font:400 clamp(39px,6vw,66px)/.95 'DM Serif Display',serif; letter-spacing:-.04em; margin:13px 0 12px; }
+    h1 em { color:var(--wine); }
+    .intro { margin:0; max-width:430px; color:var(--muted); line-height:1.65; }
+    .date { display:flex; align-items:center; gap:9px; padding:10px 13px; border:1px solid var(--line); border-radius:99px; color:var(--muted); white-space:nowrap; font-size:12px; }
+    .layout { display:grid; grid-template-columns:244px minmax(0,1fr); gap:56px; padding-top:32px; }
+    .side { position:sticky; top:26px; align-self:start; }
+    .side-label,.section-kicker { color:var(--muted); font-size:10px; letter-spacing:.13em; font-weight:700; text-transform:uppercase; }
+    .years { margin:12px 0 29px; display:grid; gap:5px; }
+    .year { width:100%; border:0; background:transparent; color:var(--muted); padding:12px 12px; text-align:left; display:flex; justify-content:space-between; border-radius:6px; transition:.18s; }
+    .year.active { color:#fff; background:var(--wine); box-shadow:0 8px 18px rgba(111,32,52,.18); }
+    .year span { font-weight:700; }
+    .year small { opacity:.72; }
+    .mini-progress { padding:20px 0 24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .mini-progress div { display:flex; justify-content:space-between; margin:9px 0; font-size:12px; }
+    .track { height:5px; background:#eee7e3; overflow:hidden; border-radius:99px; }
+    .fill { height:100%; width:0; background:var(--wine); border-radius:inherit; transition:width .35s ease; }
+    .quote { margin:26px 0 0; color:var(--muted); font:italic 20px/1.23 'DM Serif Display',serif; }
+    .content-top { display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:21px; }
+    h2 { margin:6px 0 0; font:400 31px/1 'DM Serif Display',serif; letter-spacing:-.025em; }
+    .count { font-size:12px; color:var(--muted); white-space:nowrap; }
+    .categories { display:grid; gap:30px; }
+    .category-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+    .category-name { display:flex; align-items:center; gap:9px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#655d5a; }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--wine); }
+    .category-count { color:var(--muted); font-size:11px; }
+    .goals { display:grid; gap:7px; }
+    .goal { display:grid; grid-template-columns:22px 1fr auto; align-items:center; gap:12px; min-height:63px; padding:12px 13px; background:var(--card); border:1px solid var(--line); border-radius:7px; box-shadow:0 2px 0 rgba(40,34,33,.01); transition:.18s; }
+    .goal:hover { border-color:#cfb8be; transform:translateY(-1px); box-shadow:var(--shadow); }
+    .goal.done { background:var(--green-soft); border-color:transparent; }
+    .check { width:19px; height:19px; appearance:none; border:1.5px solid #c6beb9; border-radius:5px; display:grid; place-items:center; margin:0; }
+    .check:checked { background:var(--green); border-color:var(--green); }
+    .check:checked::after { content:'✓'; color:white; font-size:13px; line-height:1; font-weight:700; }
+    .goal-title { font-size:13px; line-height:1.45; }
+    .done .goal-title { color:#8a9690; text-decoration:line-through; text-decoration-color:#afc1b7; }
+    .goal-meta { color:#a29995; font-size:10px; margin-top:3px; }
+    .remove { opacity:0; border:0; background:transparent; color:#aa9e9a; padding:7px; font-size:17px; line-height:1; transition:.15s; }
+    .goal:hover .remove,.goal:focus-within .remove { opacity:1; }
+    .remove:hover { color:var(--wine); background:var(--wine-soft); border-radius:4px; }
+    .add-box { margin-top:34px; background:#fff; border:1px dashed #cdaeb7; border-radius:8px; padding:17px; }
+    .add-title { display:flex; gap:8px; align-items:center; color:var(--wine); font-size:12px; font-weight:700; }
+    .plus { font-size:20px; font-weight:400; line-height:.7; }
+    .form-row { display:grid; grid-template-columns:1fr 187px auto; gap:8px; margin-top:13px; }
+    input[type=text],select { min-width:0; height:39px; background:var(--paper); border:1px solid var(--line); color:var(--ink); border-radius:5px; padding:0 11px; outline:none; }
+    input[type=text]:focus,select:focus { border-color:var(--wine); box-shadow:0 0 0 3px var(--wine-soft); }
+    .save { height:39px; border:0; border-radius:5px; padding:0 15px; color:#fff; background:var(--wine); font-size:12px; font-weight:700; }
+    .save:hover { background:#862940; }
+    .new-category { margin-top:11px; padding:3px 0; border:0; background:transparent; color:var(--wine); font-size:11px; font-weight:700; }
+    .new-category:hover { text-decoration:underline; }
+    .empty { color:#a29995; font-size:12px; padding:13px 5px; }
+    .toast { position:fixed; bottom:24px; left:50%; transform:translate(-50%,20px); padding:10px 15px; border-radius:99px; background:var(--ink); color:#fff; font-size:12px; opacity:0; transition:.2s; pointer-events:none; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    .account { border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:99px; padding:9px 13px; font-size:11px; font-weight:700; }
+    .account:hover { border-color:#cdaeb7; }
+    .auth-gate { position:fixed; inset:0; z-index:20; display:grid; place-items:center; padding:22px; background:rgba(250,249,247,.96); }
+    .auth-card { width:min(100%,390px); padding:32px 27px; background:#fff; border:1px solid var(--line); border-radius:11px; box-shadow:var(--shadow); text-align:center; }
+    .auth-mark { color:var(--wine); font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
+    .auth-card h2 { margin:13px 0 10px; font-size:34px; }
+    .auth-card p { margin:0 auto 22px; max-width:275px; color:var(--muted); font-size:13px; line-height:1.65; }
+    .google-login { width:100%; height:45px; border:0; border-radius:5px; background:var(--wine); color:#fff; font-size:13px; font-weight:700; }
+    .google-login:hover { background:#862940; }
+    @media (max-width:760px) { .shell{width:min(100% - 28px,620px);padding-top:27px}.date{display:none}.layout{grid-template-columns:1fr;gap:38px}.side{position:static;display:grid;grid-template-columns:1fr 1fr;gap:20px}.side-label{grid-column:span 2}.years{margin:0}.mini-progress{padding:0;border:0}.quote{display:none}.form-row{grid-template-columns:1fr auto}.form-row select{grid-column:span 2}.content-top{margin-bottom:19px} }
+    @media (max-width:480px) {
+      body { font-size:15px; }
+      .shell { width:100%; padding:calc(25px + env(safe-area-inset-top)) 16px calc(98px + env(safe-area-inset-bottom)); }
+      header { padding-bottom:25px; }
+      h1 { font-size:47px; margin:10px 0; }
+      .intro { max-width:310px; font-size:13px; }
+      .layout { padding-top:24px; gap:29px; }
+      .side { display:block; }
+      .side-label { display:none; }
+      .years { display:grid; grid-template-columns:1fr 1fr; padding:4px; gap:4px; margin:0 0 20px; background:#f0ebe8; border-radius:9px; }
+      .year { min-height:43px; align-items:center; justify-content:center; gap:7px; padding:9px; text-align:center; font-size:13px; }
+      .year small { display:none; }
+      .mini-progress { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; }
+      .mini-progress div { font-size:11px; }
+      .content-top { align-items:center; margin-bottom:16px; }
+      h2 { font-size:28px; }
+      .count { max-width:105px; text-align:right; font-size:10px; line-height:1.45; }
+      .categories { gap:25px; }
+      .category-head { margin-bottom:8px; }
+      .goal { grid-template-columns:27px 1fr 36px; min-height:72px; padding:12px 9px 12px 13px; gap:9px; }
+      .check { width:22px; height:22px; border-radius:6px; }
+      .goal-title { font-size:13px; }
+      .goal-meta { font-size:10px; }
+      .remove { opacity:1; width:36px; height:36px; display:grid; place-items:center; padding:0; font-size:21px; color:#a99e99; }
+      .add-box { margin:26px -4px 0; padding:14px; border-style:solid; background:#fff; box-shadow:0 12px 31px rgba(57,35,31,.08); }
+      .form-row { grid-template-columns:1fr; gap:9px; }
+      .form-row select { grid-column:auto; }
+      input[type=text],select,.save { height:45px; font-size:13px; }
+      .save { width:100%; font-size:13px; }
+      .toast { bottom:calc(92px + env(safe-area-inset-bottom)); }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div><div class="eyebrow">Planejamento pessoal</div><h1>Minhas metas<br><em id="heroYear">2026</em></h1><p class="intro">Um espaço calmo para dar forma ao que importa — um passo de cada vez.</p></div>
+      <div class="date">✦ &nbsp;<span id="today"></span> <button class="account" id="accountButton" type="button">Conta</button></div>
+    </header>
+    <div class="layout">
+      <aside class="side">
+        <div class="side-label">Ciclos</div>
+        <nav class="years" aria-label="Selecione o ano"><button class="year active" data-year="2026"><span>2026</span><small>agora</small></button><button class="year" data-year="2027"><span>2027</span><small>futuro</small></button></nav>
+        <div class="mini-progress"><div><span>Progresso do ano</span><strong id="percent">0%</strong></div><div class="track"><div class="fill" id="fill"></div></div><div style="margin-bottom:0"><span id="doneCopy">0 concluídas</span><span id="totalCopy">0 metas</span></div></div>
+        <p class="quote">“Grandes mudanças começam com decisões pequenas.”</p>
+      </aside>
+      <section>
+        <div class="content-top"><div><div class="section-kicker">Visão anual</div><h2>Em foco agora</h2></div><div class="count" id="summary"></div></div>
+        <div class="categories" id="categories"></div>
+        <form class="add-box" id="addForm"><div class="add-title"><span class="plus">+</span> Adicionar nova meta</div><div class="form-row"><input id="goalInput" type="text" maxlength="160" placeholder="O que você quer realizar?" required><select id="categoryInput"></select><button class="save">Salvar meta</button></div><button class="new-category" type="button" id="newCategory">+ Criar categoria</button></form>
+      </section>
+    </div>
+  </main>
+  <div class="auth-gate" id="authGate"><div class="auth-card"><div class="auth-mark">Painel pessoal</div><h2>Suas metas,<br>em segurança.</h2><p>Entre com sua conta Google para salvar suas metas e acessá-las em qualquer aparelho.</p><button class="google-login" id="googleLogin" type="button">Entrar com Google</button></div></div>
+  <div class="toast" id="toast"></div>
+  <script>
+    const defaultCategories=[['carreira','Carreira e formação'],['financeiro','Financeiro'],['saude','Saúde e bem-estar'],['pessoal','Pessoal'],['conteudo','Conteúdo e projetos']];
+    const starter={
+      '2026':[
+        ['carreira','Concluir minha formação e atualizar o portfólio',true],['carreira','Reservar uma tarde por semana para estudar',false],['financeiro','Construir uma reserva de emergência',false],['financeiro','Organizar o orçamento mensal',true],['saude','Criar uma rotina de movimento que eu goste',false],['saude','Dormir melhor, com mais constância',false],['pessoal','Ler 12 livros durante o ano',false],['conteudo','Publicar o projeto que está no papel',false]
+      ],
+      '2027':[
+        ['carreira','Dar o próximo passo na minha carreira',false],['financeiro','Planejar uma viagem especial',false],['saude','Participar de uma prova ou desafio pessoal',false],['pessoal','Manter um ritual semanal só meu',false],['conteudo','Lançar uma série autoral',false]
+      ]
+    };
+    const key='painel-metas-2026-2027-v2', categoriesKey='painel-metas-categorias-v2'; let active='2026', currentUser=null, stopCloudSync=null;
+    function hydrate(){ try { return JSON.parse(localStorage.getItem(key)) || Object.fromEntries(Object.entries(starter).map(([year,items])=>[year,items.map((x,i)=>({id:year+i,category:x[0],title:x[1],done:x[2]}))])); }catch{return {}} }
+    let data=hydrate(); let categories=hydrateCategories();
+    function hydrateCategories(){ try { const saved=JSON.parse(localStorage.getItem(categoriesKey)); return Array.isArray(saved)&&saved.length?saved:defaultCategories; }catch{return defaultCategories;} }
+    const $=s=>document.querySelector(s); const escape=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function persist(){localStorage.setItem(key,JSON.stringify(data)); saveCloud();}
+    function persistCategories(){localStorage.setItem(categoriesKey,JSON.stringify(categories)); saveCloud();}
+    async function saveCloud(){ if(!currentUser || !window.firebasePanel) return; try { await window.firebasePanel.setDoc(window.firebasePanel.doc(window.firebasePanel.db,'users',currentUser.uid,'panel','main'),{goals:data,categories,updatedAt:Date.now()}); } catch(error) { console.error(error); toast('Não foi possível salvar agora'); } }
+    function connectCloud(user){ currentUser=user; if(stopCloudSync) stopCloudSync(); const ref=window.firebasePanel.doc(window.firebasePanel.db,'users',user.uid,'panel','main'); stopCloudSync=window.firebasePanel.onSnapshot(ref,snapshot=>{ if(snapshot.exists()){ const saved=snapshot.data(); data=saved.goals||data; categories=Array.isArray(saved.categories)&&saved.categories.length?saved.categories:categories; persistLocalOnly(); render(); } else { saveCloud(); } }); }
+    function persistLocalOnly(){ try{localStorage.setItem(key,JSON.stringify(data));localStorage.setItem(categoriesKey,JSON.stringify(categories));}catch{} }
+    function toast(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),1800)}
+    function render(){ const list=data[active]||[]; const completed=list.filter(g=>g.done).length; const pct=list.length?Math.round(completed/list.length*100):0; $('#heroYear').textContent=active; $('#percent').textContent=pct+'%'; $('#fill').style.width=pct+'%'; $('#doneCopy').textContent=completed+' concluída'+(completed===1?'':'s'); $('#totalCopy').textContent=list.length+' meta'+(list.length===1?'':'s'); $('#summary').textContent=list.length+' meta'+(list.length===1?'':'s')+' para cuidar'; document.querySelectorAll('.year').forEach(b=>b.classList.toggle('active',b.dataset.year===active)); $('#categories').innerHTML=categories.map(([id,name])=>{const goals=list.filter(g=>g.category===id), done=goals.filter(g=>g.done).length;return `<article><div class="category-head"><div class="category-name"><i class="dot"></i>${escape(name)}</div><span class="category-count">${done}/${goals.length}</span></div><div class="goals">${goals.length?goals.map(g=>`<div class="goal ${g.done?'done':''}"><input class="check" type="checkbox" ${g.done?'checked':''} aria-label="Concluir ${escape(g.title)}" onchange="toggle('${g.id}')"><div><div class="goal-title">${escape(g.title)}</div><div class="goal-meta">Meta de ${active}</div></div><button class="remove" title="Excluir meta" aria-label="Excluir meta" onclick="removeGoal('${g.id}')">×</button></div>`).join(''):'<div class="empty">Ainda não há metas por aqui.</div>'}</div></article>`}).join(''); $('#categoryInput').innerHTML=categories.map(([id,name])=>`<option value="${id}">${escape(name)}</option>`).join(''); }
+    function toggle(id){const g=data[active].find(g=>g.id===id);if(g){g.done=!g.done;persist();render();toast(g.done?'Meta concluída ✦':'Meta reaberta');}}
+    function removeGoal(id){data[active]=data[active].filter(g=>g.id!==id);persist();render();toast('Meta excluída');}
+    document.querySelectorAll('.year').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.year;render()}));
+    $('#addForm').addEventListener('submit',e=>{e.preventDefault();const input=$('#goalInput');const title=input.value.trim();if(!title)return;data[active].push({id:Date.now().toString(36),category:$('#categoryInput').value,title,done:false});persist();input.value='';render();toast('Nova meta adicionada');});
+    $('#newCategory').addEventListener('click',()=>{const name=window.prompt('Nome da nova categoria:');if(name===null)return;const clean=name.trim().slice(0,48);if(!clean)return;const id='cat-'+Date.now().toString(36);categories.push([id,clean]);persistCategories();render();$('#categoryInput').value=id;toast('Categoria criada');});
+    $('#googleLogin').addEventListener('click',async()=>{ try{ await window.firebasePanel.signInWithPopup(window.firebasePanel.auth,new window.firebasePanel.GoogleAuthProvider()); }catch(error){ console.error(error); toast('Não foi possível entrar. Tente novamente.'); } });
+    $('#accountButton').addEventListener('click',async()=>{ if(currentUser){ await window.firebasePanel.signOut(window.firebasePanel.auth); } });
+    window.addEventListener('firebase-ready',()=>{ window.firebasePanel.onAuthStateChanged(window.firebasePanel.auth,user=>{ if(user){ connectCloud(user); $('#authGate').style.display='none'; $('#accountButton').textContent='Sair'; } else { currentUser=null; if(stopCloudSync) stopCloudSync(); $('#authGate').style.display='grid'; $('#accountButton').textContent='Entrar'; } }); });
+    $('#today').textContent=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'long',year:'numeric'}).format(new Date()); render();
+  </script>
+</body>
+</html>
+
+
